@@ -43,34 +43,32 @@
 //#define CANCOMMAND_DEBUG
 
 
-class CANCommand {
+class SerialCommand {
   public:
     CANCommand();      // Constructor
-    void addCommand(const char *command, void(*function)());  // Add a command to the processing dictionary.
+    void addCommand(uint32, void(*function)());  // Add a command to the processing dictionary.
     void setDefaultHandler(void (*function)(const char *));   // A handler to call when no valid command received.
 
-    void readSerial();    // Main entry point.
-    void clearBuffer();   // Clears the input buffer.
-    char *next();         // Returns pointer to next token found in command buffer (for getting arguments to commands).
+    struct CANMessage {
+      uint32 ID;		// CAN ID
+      uint8 IDE;		// CAN_ID_STD for standard and CAN_ID_EXT for extended
+      uint8 RTR;
+      uint8 DLC;
+      uint8 Data[8];
+      uint8 FMI;
+    };
 
   private:
     // Command/handler dictionary
     struct CANCommandCallback {
-      char command[CANCOMMAND_MAXCOMMANDLENGTH + 1];
-      void (*function)();
+      uint32 command;
+      void (*function)(CANMessage);
     };                                    // Data structure to hold Command/Handler function key-value pairs
     CANCommandCallback *commandList;   // Actual definition for command/handler array
     byte commandCount;
 
     // Pointer to the default handler function
-    void (*defaultHandler)(const char *);
-
-    char delim[2]; // null-terminated list of character to be used as delimeters for tokenizing (default " ")
-    char term;     // Character that signals end of command (default '\n')
-
-    char buffer[CANCommand_BUFFER + 1]; // Buffer of stored characters while waiting for terminator character
-    byte bufPos;                        // Current position in the buffer
-    char *last;                         // State variable used by strtok_r during processing
+    void (*defaultHandler)(CANMessage);
 };
 
 #endif //CANCommand_h
