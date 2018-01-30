@@ -33,7 +33,7 @@
 CANCommand::CANCommand()
   : commandList(NULL),
     commandCount(0),
-    defaultHandler(NULL),
+    defaultHandler(NULL)
 {
 }
 
@@ -43,13 +43,6 @@ CANCommand::CANCommand()
  * to the handler function to deal with it.
  */
 void CANCommand::addCommand(uint32 command, void (*function)()) {
-  #ifdef CANCOMMAND_DEBUG
-    Serial.print("Adding command (");
-    Serial.print(commandCount);
-    Serial.print("): ");
-    Serial.println(command);
-  #endif
-
   commandList = (CANCommandCallback *) realloc(commandList, (commandCount + 1) * sizeof(CANCommandCallback));
   commandList[commandCount].command = command;
   commandList[commandCount].function = function;
@@ -60,21 +53,22 @@ void CANCommand::addCommand(uint32 command, void (*function)()) {
  * This sets up a handler to be called in the event that the receveived command string
  * isn't in the list of commands.
  */
-void CANCommand::setDefaultHandler(void (*function)(CANMessage)) {
+void CANCommand::setDefaultHandler(void (*function)()) {
   defaultHandler = function;
 }
 
-void CANCommand::processCANMessage(CANMessage message) {
+void CANCommand::processCANMessage(CANMessage* incoming_message) {
   bool matched = false;
+  message = incoming_message;
 
   for(uint8 i =0; i < commandCount; i++) {
-    if(command[i] == message.ID) {
+    if(commandList[i].command == message->ID) {
       matched = true;
 
-      (*commandList[i].function)(message);
+      (*commandList[i].function)();
     }
     if(!matched && (defaultHandler != NULL)) {
-      (*defaultHandler)(message);
+      (*defaultHandler)();
     }
   }
 }

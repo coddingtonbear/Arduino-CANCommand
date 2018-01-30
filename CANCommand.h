@@ -24,51 +24,35 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  */
 #pragma once
+#include <Arduino.h>
 
-#if defined(WIRING) && WIRING >= 100
-  #include <Wiring.h>
-#elif defined(ARDUINO) && ARDUINO >= 100
-  #include <Arduino.h>
-#else
-  #include <WProgram.h>
-#endif
-#include <string.h>
-
-// Size of the input buffer in bytes (maximum length of one command plus arguments)
-#define CANCOMMAND_BUFFER 32           // Irrelevant
-// Maximum length of a command excluding the terminating null
-#define CANCOMMAND_MAXCOMMANDLENGTH 8  // Irrelevant
-
-// Uncomment the next line to run the library in debug mode (verbose messages)
-//#define CANCOMMAND_DEBUG
-
-
-class SerialCommand {
+class CANCommand {
   public:
     CANCommand();      // Constructor
+
     void addCommand(uint32, void(*function)());  // Add a command to the processing dictionary.
-    void setDefaultHandler(void (*function)(const char *));   // A handler to call when no valid command received.
+    void setDefaultHandler(void (*function)());   // A handler to call when no valid command received.
 
     struct CANMessage {
-      uint32 ID;		// CAN ID
-      uint8 IDE;		// CAN_ID_STD for standard and CAN_ID_EXT for extended
+      uint32 ID;
+      uint8 IDE;
       uint8 RTR;
       uint8 DLC;
       uint8 Data[8];
       uint8 FMI;
     };
+    CANMessage *message;
 
+    void processCANMessage(CANMessage* incoming_message);
   private:
     // Command/handler dictionary
     struct CANCommandCallback {
       uint32 command;
-      void (*function)(CANMessage);
+      void (*function)();
     };                                    // Data structure to hold Command/Handler function key-value pairs
     CANCommandCallback *commandList;   // Actual definition for command/handler array
     byte commandCount;
 
     // Pointer to the default handler function
-    void (*defaultHandler)(CANMessage);
+    void (*defaultHandler)();
 };
-
-#endif //CANCommand_h
