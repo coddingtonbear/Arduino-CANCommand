@@ -1,12 +1,14 @@
 /**
- * SerialCommand - A Wiring/Arduino library to tokenize and parse commands
- * received over a serial port.
+ * CANCommand - A Wiring/Arduino library to tokenize and parse commands
+ * received over CANBus.
+ * 
+ * Copyright (C) 2018 Adam Coddington
+ * 
+ * Derived directly from SerialCommand created by:
  * 
  * Copyright (C) 2012 Stefan Rado
  * Copyright (C) 2011 Steven Cogswell <steven.cogswell@gmail.com>
  *                    http://husks.wordpress.com
- * 
- * Version 20120522
  * 
  * This library is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -21,8 +23,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef SerialCommand_h
-#define SerialCommand_h
+#pragma once
 
 #if defined(WIRING) && WIRING >= 100
   #include <Wiring.h>
@@ -34,17 +35,17 @@
 #include <string.h>
 
 // Size of the input buffer in bytes (maximum length of one command plus arguments)
-#define SERIALCOMMAND_BUFFER 32
+#define CANCOMMAND_BUFFER 32           // Irrelevant
 // Maximum length of a command excluding the terminating null
-#define SERIALCOMMAND_MAXCOMMANDLENGTH 8
+#define CANCOMMAND_MAXCOMMANDLENGTH 8  // Irrelevant
 
 // Uncomment the next line to run the library in debug mode (verbose messages)
-//#define SERIALCOMMAND_DEBUG
+//#define CANCOMMAND_DEBUG
 
 
-class SerialCommand {
+class CANCommand {
   public:
-    SerialCommand();      // Constructor
+    CANCommand();      // Constructor
     void addCommand(const char *command, void(*function)());  // Add a command to the processing dictionary.
     void setDefaultHandler(void (*function)(const char *));   // A handler to call when no valid command received.
 
@@ -54,11 +55,11 @@ class SerialCommand {
 
   private:
     // Command/handler dictionary
-    struct SerialCommandCallback {
-      char command[SERIALCOMMAND_MAXCOMMANDLENGTH + 1];
+    struct CANCommandCallback {
+      char command[CANCOMMAND_MAXCOMMANDLENGTH + 1];
       void (*function)();
     };                                    // Data structure to hold Command/Handler function key-value pairs
-    SerialCommandCallback *commandList;   // Actual definition for command/handler array
+    CANCommandCallback *commandList;   // Actual definition for command/handler array
     byte commandCount;
 
     // Pointer to the default handler function
@@ -67,9 +68,9 @@ class SerialCommand {
     char delim[2]; // null-terminated list of character to be used as delimeters for tokenizing (default " ")
     char term;     // Character that signals end of command (default '\n')
 
-    char buffer[SERIALCOMMAND_BUFFER + 1]; // Buffer of stored characters while waiting for terminator character
+    char buffer[CANCommand_BUFFER + 1]; // Buffer of stored characters while waiting for terminator character
     byte bufPos;                        // Current position in the buffer
     char *last;                         // State variable used by strtok_r during processing
 };
 
-#endif //SerialCommand_h
+#endif //CANCommand_h
