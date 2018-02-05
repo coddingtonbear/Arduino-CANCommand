@@ -67,8 +67,8 @@ void CANCommand::processCANMessage(CANMessage* incoming_message) {
 
       (*commandList[i].function)();
     }
-    if(!matched && (defaultHandler != NULL)) {
-      (*defaultHandler)();
-    }
+  }
+  if(!matched && (defaultHandler != NULL)) {
+    (*defaultHandler)();
   }
 }
