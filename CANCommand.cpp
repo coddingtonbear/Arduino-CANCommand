@@ -49,6 +49,20 @@ void CANCommand::addCommand(uint32 command, void (*function)()) {
   commandCount++;
 }
 
+uint8* CANCommand::getData() {
+  static uint8 data[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+
+  if(message == NULL) {
+    return data;
+  }
+
+  for(uint8 i = 0; i < message->DLC; i++) {
+    data[i] = message->Data[i];
+  }
+
+  return data;
+}
+
 /**
  * This sets up a handler to be called in the event that the receveived command string
  * isn't in the list of commands.
