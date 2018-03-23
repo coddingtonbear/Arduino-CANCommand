@@ -43,7 +43,7 @@ class CANCommand {
     };
     CANMessage *message;
 
-    uint8* getData();
+    void getData(uint8_t[]);
     void processCANMessage(CANMessage* incoming_message);
   private:
     // Command/handler dictionary
