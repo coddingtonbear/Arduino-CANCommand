@@ -63,7 +63,7 @@ void CANCommand::getData(uint8_t data[]) {
  * This sets up a handler to be called in the event that the receveived command string
  * isn't in the list of commands.
  */
-void CANCommand::setDefaultHandler(void (*function)()) {
+void CANCommand::setDefaultHandler(void (*function)(CANMessage* msg)) {
   defaultHandler = function;
 }
 
@@ -79,6 +79,6 @@ void CANCommand::processCANMessage(CANMessage* incoming_message) {
     }
   }
   if(!matched && (defaultHandler != NULL)) {
-    (*defaultHandler)();
+    (*defaultHandler)(incoming_message);
   }
 }

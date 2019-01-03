@@ -30,9 +30,6 @@ class CANCommand {
   public:
     CANCommand();      // Constructor
 
-    void addCommand(uint32, void(*function)());  // Add a command to the processing dictionary.
-    void setDefaultHandler(void (*function)());   // A handler to call when no valid command received.
-
     struct CANMessage {
       uint32 ID;
       uint8 IDE;
@@ -41,6 +38,10 @@ class CANCommand {
       uint8 Data[8];
       uint8 FMI;
     };
+
+    void addCommand(uint32, void(*function)());  // Add a command to the processing dictionary.
+    void setDefaultHandler(void (*function)(CANMessage*));   // A handler to call when no valid command received.
+
     CANMessage *message;
 
     void getData(uint8_t[]);
@@ -55,5 +56,5 @@ class CANCommand {
     byte commandCount;
 
     // Pointer to the default handler function
-    void (*defaultHandler)();
+    void (*defaultHandler)(CANMessage*);
 };
